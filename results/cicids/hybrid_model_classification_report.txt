@@ -1,0 +1,30 @@
+Classification Report - Hybrid Model
+================================================================================
+
+                            precision    recall  f1-score   support
+
+                    BENIGN     0.9997    0.9862    0.9929    340965
+                       Bot     0.4297    0.9627    0.5941       295
+                      DDoS     0.9991    0.9996    0.9993     19204
+             DoS GoldenEye     0.9684    0.9935    0.9808      1544
+                  DoS Hulk     0.9948    0.9996    0.9972     34661
+          DoS Slowhttptest     0.9785    0.9952    0.9868       825
+             DoS slowloris     0.9897    0.9965    0.9931       869
+               FTP-Patator     0.9992    0.9992    0.9992      1191
+                Heartbleed     1.0000    1.0000    1.0000         1
+              Infiltration     0.3846    1.0000    0.5556         5
+                  PortScan     0.8553    0.9969    0.9207     23840
+               SSH-Patator     0.9585    0.9921    0.9750       885
+  Web Attack � Brute Force     0.7373    0.7080    0.7223       226
+Web Attack � Sql Injection     0.1053    0.6667    0.1818         3
+          Web Attack � XSS     0.4118    0.5000    0.4516        98
+
+                  accuracy                         0.9883    424612
+                 macro avg     0.7875    0.9197    0.8234    424612
+              weighted avg     0.9902    0.9883    0.9888    424612
+
+
+Overall Metrics:
+  Accuracy: 98.83%
+  Inference Time: 73.78s
+  Avg Latency: 0.17ms

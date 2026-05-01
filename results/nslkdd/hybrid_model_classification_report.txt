@@ -1,0 +1,20 @@
+Classification Report - Hybrid Model
+================================================================================
+
+              precision    recall  f1-score   support
+
+         DoS     0.9545    0.7740    0.8548      7460
+      Normal     0.6914    0.9228    0.7905      9711
+       Probe     0.6279    0.5820    0.6041      2421
+         R2L     0.5727    0.2430    0.3412      2885
+         U2R     0.4242    0.4179    0.4211        67
+
+    accuracy                         0.7484     22544
+   macro avg     0.6542    0.5879    0.6023     22544
+weighted avg     0.7557    0.7484    0.7332     22544
+
+
+Overall Metrics:
+  Accuracy: 74.84%
+  Inference Time: 3.41s
+  Avg Latency: 0.15ms

@@ -1,0 +1,20 @@
+# Python environment
+.venv/
+venv/
+
+#large files
+models/
+data/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local/temporary folders
+mnt/
+terminal process.txt
+
+# PyCharm settings
+.idea/

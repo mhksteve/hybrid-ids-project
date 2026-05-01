@@ -1,0 +1,20 @@
+Classification Report - SVM
+================================================================================
+
+              precision    recall  f1-score   support
+
+         DoS     0.9545    0.7988    0.8697      7460
+      Normal     0.7233    0.9140    0.8076      9711
+       Probe     0.7166    0.8001    0.7560      2421
+         R2L     0.9279    0.2946    0.4473      2885
+         U2R     0.1095    0.6716    0.1883        67
+
+    accuracy                         0.7837     22544
+   macro avg     0.6864    0.6958    0.6138     22544
+weighted avg     0.8235    0.7837    0.7747     22544
+
+
+Overall Metrics:
+  Accuracy: 78.37%
+  Inference Time: 5.47s
+  Avg Latency: 0.24ms

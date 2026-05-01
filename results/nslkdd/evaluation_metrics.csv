@@ -1,0 +1,7 @@
+Model,Accuracy,Precision (Macro),Recall (Macro),F1-Score (Macro),Avg Latency (ms),Total Inference Time (s)
+Random Forest,75.92%,0.7826,0.5270,0.5516,0.01,0.14
+XGBoost,79.60%,0.7631,0.5930,0.6156,0.01,0.11
+SVM,78.37%,0.6864,0.6958,0.6138,0.24,5.47
+1D-CNN,77.64%,0.6400,0.6415,0.6267,0.12,2.60
+LSTM,73.58%,0.6175,0.6680,0.5677,1.65,37.24
+Hybrid Model,74.84%,0.6542,0.5879,0.6023,0.15,3.41

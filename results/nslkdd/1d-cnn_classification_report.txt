@@ -1,0 +1,20 @@
+Classification Report - 1D-CNN
+================================================================================
+
+              precision    recall  f1-score   support
+
+         DoS     0.9556    0.8347    0.8911      7460
+      Normal     0.7457    0.9186    0.8232      9711
+       Probe     0.6269    0.6093    0.6179      2421
+         R2L     0.5259    0.2925    0.3759      2885
+         U2R     0.3458    0.5522    0.4253        67
+
+    accuracy                         0.7764     22544
+   macro avg     0.6400    0.6415    0.6267     22544
+weighted avg     0.7731    0.7764    0.7652     22544
+
+
+Overall Metrics:
+  Accuracy: 77.64%
+  Inference Time: 2.60s
+  Avg Latency: 0.12ms
