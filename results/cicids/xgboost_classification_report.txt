@@ -26,5 +26,5 @@ Web Attack � Sql Injection     1.0000    0.6667    0.8000         3
 
 Overall Metrics:
   Accuracy: 99.87%
-  Inference Time: 2.10s
-  Avg Latency: 0.00ms
+  Inference Time: 3.47s
+  Avg Latency: 0.01ms

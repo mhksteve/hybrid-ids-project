@@ -13,6 +13,8 @@ import sys
 import argparse
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
@@ -245,7 +247,87 @@ def save_metrics_csv(results, output_dir):
     print(f"✓ Metrics saved to: {csv_path}\n")
     print(df.to_string(index=False))
 
+def plot_standalone_model_comparison(results, output_dir, dataset_name):
+    """
+    Generate a grouped bar chart for standalone model comparison.
+    This is intended for dissertation reporting, especially Chapter 4.2.
+    It compares Accuracy (%) and Macro F1-score (%) for:
+    Random Forest, XGBoost, SVM, 1D-CNN, and LSTM.
+    """
+    print(f"\n{'='*80}")
+    print("GENERATING STANDALONE MODEL COMPARISON BAR CHART")
+    print(f"{'='*80}\n")
 
+    # ADDED: keep the order consistent with the dissertation text
+    standalone_models = ['Random Forest', 'XGBoost', 'SVM', '1D-CNN', 'LSTM']
+
+    # ADDED: only keep models that were successfully evaluated
+    available_models = [m for m in standalone_models if m in results]
+
+    if not available_models:
+        print(" ⚠ No standalone models available for comparison plot\n")
+        return
+
+    # ADDED: convert values to percentages for easier visual comparison
+    accuracy_values = [results[m]['accuracy'] * 100 for m in available_models]
+    f1_values = [results[m]['f1_score'] * 100 for m in available_models]
+
+    x = np.arange(len(available_models))
+    width = 0.35
+
+    plt.figure(figsize=(10, 6))
+
+    # ADDED: first bar group = accuracy
+    bars1 = plt.bar(
+        x - width / 2,
+        accuracy_values,
+        width,
+        label='Accuracy (%)',
+        color='steelblue',
+        edgecolor='black'
+    )
+
+    # ADDED: second bar group = macro F1
+    bars2 = plt.bar(
+        x + width / 2,
+        f1_values,
+        width,
+        label='Macro F1-score (%)',
+        color='darkorange',
+        edgecolor='black'
+    )
+
+    plt.xticks(x, available_models, rotation=15)
+    plt.ylabel('Score (%)', fontsize=12)
+    plt.xlabel('Model', fontsize=12)
+    plt.title(
+        f'Standalone Model Comparison - {dataset_name.upper()}',
+        fontsize=14,
+        fontweight='bold'
+    )
+    plt.ylim(0, 105)
+    plt.legend()
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+
+    # ADDED: label the bars for easier dissertation use
+    for bar in list(bars1) + list(bars2):
+        height = bar.get_height()
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            height + 1,
+            f'{height:.2f}',
+            ha='center',
+            va='bottom',
+            fontsize=9
+        )
+
+    # ADDED: save with dataset-specific filename
+    filename = f'{output_dir}/standalone_model_comparison.png'
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    print(f" ✓ Saved: {filename}\n")
 
 def save_classification_reports(results, y_test, label_encoder, output_dir):
     """
@@ -542,6 +624,7 @@ Examples:
     
     # Generate outputs
     save_metrics_csv(results, output_dir)
+    plot_standalone_model_comparison(results, output_dir, args.dataset)
     save_classification_reports(results, y_test, label_encoder, output_dir)
     plot_confusion_matrices(results, y_test, label_encoder, output_dir)
     plot_combined_roc_curve(results, y_test, label_encoder, output_dir)
@@ -554,6 +637,7 @@ Examples:
     print(f"\nAll results saved to: {output_dir}/")
     print("\nGenerated files:")
     print(f"  • evaluation_metrics.csv")
+    print(f" • standalone_model_comparison.png")
     print(f"  • {len(results)}x confusion matrix plots")
     print(f"  • combined_roc_curve.png")
     print(f"  • 2x feature importance plots (RF, XGBoost)")
