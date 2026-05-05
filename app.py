@@ -65,8 +65,6 @@ st.markdown("""
 @st.cache_resource
 def load_active_model(dataset_dir, model_name):
     """
-    Load the specified model and preprocessing artifacts
-    
     Args:
         dataset_dir: 'cicids' or 'nslkdd'
         model_name: 'Random Forest', 'XGBoost', 'SVM', '1D-CNN', 'LSTM', or 'Hybrid Model'
@@ -132,8 +130,6 @@ def load_test_data(dataset_dir):
 
 def make_prediction(sample, model, scaler, label_encoder, model_name):
     """
-    Make prediction using the specified model
-
     Args:
         sample: Single sample (1D array)
         model: Loaded model (or tuple of models for Hybrid)
@@ -145,12 +141,11 @@ def make_prediction(sample, model, scaler, label_encoder, model_name):
         prediction, probability, latency_ms
     """
     start_time = time.time()
-    
-    # Ensure sample is 2D
+
     if len(sample.shape) == 1:
         sample = sample.reshape(1, -1)
 
-    # Deep Learning models (1D-CNN, LSTM) need 3D input
+    # Deep Learning models 3D input
     if model_name in ['1D-CNN', 'LSTM']:
         sample_3d = sample.reshape(sample.shape[0], sample.shape[1], 1)
         prediction_probs = model.predict(sample_3d, verbose=0)

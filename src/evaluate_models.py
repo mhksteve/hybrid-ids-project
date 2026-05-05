@@ -1,7 +1,6 @@
 """
 Model Evaluation Script for Hybrid IDS
 Generates formal metrics, confusion matrices, ROC curves, and feature importance plots
-for academic dissertation/publication
 
 Usage:
     python src/evaluate_models.py --dataset cicids
@@ -28,15 +27,13 @@ from sklearn.preprocessing import label_binarize
 import warnings
 warnings.filterwarnings('ignore')
 
-# Set style for publication-quality plots
+# style for publication-quality plots
 plt.style.use('seaborn-v0_8-darkgrid')
 sns.set_palette("husl")
 
 
 def load_data_and_artifacts(dataset_dir):
     """
-    Load test data and preprocessing artifacts
-    
     Args:
         dataset_dir: Path to model directory (e.g., 'models/cicids')
     
@@ -66,8 +63,6 @@ def load_data_and_artifacts(dataset_dir):
 
 def load_model(model_name, dataset_dir):
     """
-    Load a specific model
-    
     Args:
         model_name: Name of the model
         dataset_dir: Path to model directory
@@ -106,8 +101,6 @@ def load_model(model_name, dataset_dir):
 
 def predict_model(model, X_test, model_name):
     """
-    Make predictions with proper input reshaping for different model types
-    
     Args:
         model: Loaded model
         X_test: Test features
@@ -118,7 +111,7 @@ def predict_model(model, X_test, model_name):
     """
     start_time = time.time()
     
-    # Deep Learning models need 3D input
+    # Deep Learning models 3D input
     if model_name in ['1D-CNN', 'LSTM']:
         X_test_3d = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
         y_pred_probs = model.predict(X_test_3d, verbose=0)
@@ -140,7 +133,7 @@ def predict_model(model, X_test, model_name):
     else:
         y_pred = model.predict(X_test)
         
-        # SVM may not have predict_proba if probability=False
+        # SVM will not have predict_proba if probability=False
         try:
             y_pred_probs = model.predict_proba(X_test)
         except AttributeError:
@@ -154,8 +147,6 @@ def predict_model(model, X_test, model_name):
 
 def evaluate_all_models(X_test, y_test, label_encoder, dataset_dir):
     """
-    Evaluate all 6 models and collect metrics
-    
     Args:
         X_test: Test features
         y_test: Test labels
@@ -217,8 +208,6 @@ def evaluate_all_models(X_test, y_test, label_encoder, dataset_dir):
 
 def save_metrics_csv(results, output_dir):
     """
-    Save evaluation metrics to CSV file
-    
     Args:
         results: Dictionary of model results
         output_dir: Directory to save the CSV
@@ -249,26 +238,22 @@ def save_metrics_csv(results, output_dir):
 
 def plot_standalone_model_comparison(results, output_dir, dataset_name):
     """
-    Generate a grouped bar chart for standalone model comparison.
-    This is intended for dissertation reporting, especially Chapter 4.2.
-    It compares Accuracy (%) and Macro F1-score (%) for:
+    Bar chart for standalone model comparison
     Random Forest, XGBoost, SVM, 1D-CNN, and LSTM.
     """
     print(f"\n{'='*80}")
     print("GENERATING STANDALONE MODEL COMPARISON BAR CHART")
     print(f"{'='*80}\n")
 
-    # ADDED: keep the order consistent with the dissertation text
     standalone_models = ['Random Forest', 'XGBoost', 'SVM', '1D-CNN', 'LSTM']
 
-    # ADDED: only keep models that were successfully evaluated
     available_models = [m for m in standalone_models if m in results]
 
     if not available_models:
         print(" ⚠ No standalone models available for comparison plot\n")
         return
 
-    # ADDED: convert values to percentages for easier visual comparison
+    # convert values to percentages for visual comparison
     accuracy_values = [results[m]['accuracy'] * 100 for m in available_models]
     f1_values = [results[m]['f1_score'] * 100 for m in available_models]
 
@@ -277,7 +262,7 @@ def plot_standalone_model_comparison(results, output_dir, dataset_name):
 
     plt.figure(figsize=(10, 6))
 
-    # ADDED: first bar group = accuracy
+    # first bar group = accuracy
     bars1 = plt.bar(
         x - width / 2,
         accuracy_values,
@@ -287,7 +272,7 @@ def plot_standalone_model_comparison(results, output_dir, dataset_name):
         edgecolor='black'
     )
 
-    # ADDED: second bar group = macro F1
+    # second bar group = macro F1
     bars2 = plt.bar(
         x + width / 2,
         f1_values,
@@ -310,7 +295,7 @@ def plot_standalone_model_comparison(results, output_dir, dataset_name):
     plt.grid(axis='y', alpha=0.3)
     plt.tight_layout()
 
-    # ADDED: label the bars for easier dissertation use
+    # label
     for bar in list(bars1) + list(bars2):
         height = bar.get_height()
         plt.text(
@@ -322,7 +307,7 @@ def plot_standalone_model_comparison(results, output_dir, dataset_name):
             fontsize=9
         )
 
-    # ADDED: save with dataset-specific filename
+    # save
     filename = f'{output_dir}/standalone_model_comparison.png'
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
@@ -331,8 +316,6 @@ def plot_standalone_model_comparison(results, output_dir, dataset_name):
 
 def save_classification_reports(results, y_test, label_encoder, output_dir):
     """
-    Save detailed per-class classification reports to text files
-
     Args:
         results: Dictionary of model results
         y_test: True labels
@@ -348,7 +331,7 @@ def save_classification_reports(results, y_test, label_encoder, output_dir):
     for model_name, result in results.items():
         print(f"  Saving {model_name}...")
 
-        # Generate classification report
+        # classification report
         report = classification_report(
             y_test,
             result['y_pred'],
@@ -376,8 +359,6 @@ def save_classification_reports(results, y_test, label_encoder, output_dir):
 
 def plot_confusion_matrices(results, y_test, label_encoder, output_dir):
     """
-    Generate and save confusion matrix heatmaps for all models
-    
     Args:
         results: Dictionary of model results
         y_test: True labels
@@ -395,11 +376,10 @@ def plot_confusion_matrices(results, y_test, label_encoder, output_dir):
         
         # Calculate confusion matrix
         cm = confusion_matrix(y_test, result['y_pred'])
-        
-        # Create figure
+
         plt.figure(figsize=(12, 10))
         
-        # Plot heatmap
+        #  heatmap
         sns.heatmap(
             cm,
             annot=True,
@@ -430,8 +410,6 @@ def plot_confusion_matrices(results, y_test, label_encoder, output_dir):
 
 def plot_combined_roc_curve(results, y_test, label_encoder, output_dir):
     """
-    Generate combined macro-average ROC curve for all models
-    
     Args:
         results: Dictionary of model results
         y_test: True labels
@@ -445,11 +423,9 @@ def plot_combined_roc_curve(results, y_test, label_encoder, output_dir):
     # Binarize the labels for multi-class ROC
     n_classes = len(label_encoder.classes_)
     y_test_bin = label_binarize(y_test, classes=range(n_classes))
-    
-    # Create figure
+
     plt.figure(figsize=(10, 8))
-    
-    # Colors for different models
+
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']
     
     for idx, (model_name, result) in enumerate(results.items()):
@@ -516,8 +492,6 @@ def plot_combined_roc_curve(results, y_test, label_encoder, output_dir):
 
 def plot_feature_importance(results, output_dir, top_n=20):
     """
-    Plot feature importance for Random Forest and XGBoost
-    
     Args:
         results: Dictionary of model results
         output_dir: Directory to save plots
@@ -536,7 +510,7 @@ def plot_feature_importance(results, output_dir, top_n=20):
         
         model = results[model_name]['model']
         
-        # Get feature importances
+        #  feature importances
         if hasattr(model, 'feature_importances_'):
             importances = model.feature_importances_
             
@@ -630,7 +604,7 @@ Examples:
     plot_combined_roc_curve(results, y_test, label_encoder, output_dir)
     plot_feature_importance(results, output_dir, top_n=20)
     
-    # Final summary
+    # Summary
     print("\n" + "="*80)
     print("EVALUATION COMPLETE!")
     print("="*80)

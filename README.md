@@ -2,6 +2,8 @@
 
 This project implements a hybrid intrusion detection system that combines deep learning feature extraction with machine learning classification. The system was developed for dissertation research and includes a Streamlit dashboard for simulated near real-time monitoring.
 
+- for Fast version: https://github.com/mhksteve/hybrid-ids-project-fast
+
 ## Project Overview
 
 The project evaluates three modelling approaches:

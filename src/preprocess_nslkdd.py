@@ -1,6 +1,5 @@
 """
 NSL-KDD Dataset Preprocessing Module
-Handles loading, cleaning, encoding, scaling, and balancing for NSL-KDD data
 """
 
 import numpy as np
@@ -15,8 +14,6 @@ import joblib
 
 def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_state=42):
     """
-    Complete preprocessing pipeline for NSL-KDD dataset
-    
     Args:
         train_path: Path to KDDTrain+.txt file
         test_path: Path to KDDTest+.txt file
@@ -31,7 +28,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     print("NSL-KDD DATASET PREPROCESSING")
     print("="*80)
     
-    # Define exact column names for NSL-KDD (41 features + target + difficulty)
+    # exact column names for NSL-KDD (41 features/target/difficulty)
     kdd_cols = [
         'duration', 'protocol_type', 'service', 'flag', 'src_bytes', 'dst_bytes', 
         'land', 'wrong_fragment', 'urgent', 'hot', 'num_failed_logins', 'logged_in', 
@@ -45,7 +42,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
         'dst_host_rerror_rate', 'dst_host_srv_rerror_rate', 'target', 'difficulty_level'
     ]
     
-    # Step 1: Load train data
+    # step 1: Load train data
     print(f"\n[1/9] Loading training data from: {train_path}")
     
     try:
@@ -59,7 +56,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
         print(f"✗ ERROR loading training data: {e}")
         return None
     
-    # Step 2: Load test data
+    # step 2: Load test data
     print(f"\n[2/9] Loading test data from: {test_path}")
     
     try:
@@ -82,14 +79,14 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     print(f"\nColumn names:")
     print(train_df.columns.tolist())
     
-    # Step 3: Drop difficulty_level column
+    # step 3: Drop difficulty_level column
     print(f"\n[4/9] Dropping 'difficulty_level' column...")
     train_df = train_df.drop(columns=['difficulty_level'])
     test_df = test_df.drop(columns=['difficulty_level'])
     print(f"✓ Column dropped")
     print(f"New shapes - Train: {train_df.shape}, Test: {test_df.shape}")
 
-    # Step 4: Separate features and target with attack category mapping
+    # step 4: Separate features and target with attack category mapping
     print(f"\n[5/10] Separating features and target...")
 
     X_train = train_df.drop(columns=['target'])
@@ -99,19 +96,19 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
 
     print(f"✓ Features and target separated")
 
-    # Remove trailing dots from attack names (NSL-KDD format quirk)
+    # Remove trailing dots from attack names
     y_train_clean = y_train_raw.str.rstrip('.')
     y_test_clean = y_test_raw.str.rstrip('.')
 
     print(f"\nOriginal unique attacks in training: {y_train_clean.nunique()}")
     print(f"Original unique attacks in test: {y_test_clean.nunique()}")
 
-    # Create attack category mapping (40+ attacks → 5 categories)
+    # attack category mapping (40+ attacks → 5 categories)
     attack_mapping = {
-        # Normal traffic
+        # Normal
         'normal': 'Normal',
 
-        # DoS (Denial of Service) attacks
+        # DoS attacks
         'back': 'DoS',
         'land': 'DoS',
         'neptune': 'DoS',
@@ -124,7 +121,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
         'apache2': 'DoS',
         'worm': 'DoS',
 
-        # Probe (Surveillance and Probing) attacks
+        # Probe attacks
         'ipsweep': 'Probe',
         'nmap': 'Probe',
         'portsweep': 'Probe',
@@ -159,7 +156,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
         'xterm': 'U2R'
     }
 
-    # Apply mapping (fallback to original if not in mapping)
+    # apply mapping (fallback to original if not in mapping)
     y_train = y_train_clean.map(attack_mapping).fillna(y_train_clean)
     y_test = y_test_clean.map(attack_mapping).fillna(y_test_clean)
 
@@ -169,24 +166,22 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     print(f"\nTest target distribution (5 categories):")
     print(y_test.value_counts())
     
-    # Step 5: One-Hot Encoding for categorical features
+    # step 5: One-Hot Encoding for categorical features
     print(f"\n[6/9] Applying One-Hot Encoding to categorical features...")
     
     categorical_cols = ['protocol_type', 'service', 'flag']
     print(f"Categorical columns: {categorical_cols}")
     
-    # Apply one-hot encoding to training data
+    # one-hot encoding - training data
     X_train_encoded = pd.get_dummies(X_train, columns=categorical_cols, prefix=categorical_cols)
     print(f"✓ Training data encoded - Shape: {X_train_encoded.shape}")
     
-    # Apply one-hot encoding to test data
+    # one-hot encoding - test data
     X_test_encoded = pd.get_dummies(X_test, columns=categorical_cols, prefix=categorical_cols)
     print(f"✓ Test data encoded - Shape: {X_test_encoded.shape}")
-    
-    # Align columns between train and test (ensure same features)
+
     print(f"\nAligning train and test columns...")
-    
-    # Get all columns from both sets
+
     train_cols = set(X_train_encoded.columns)
     test_cols = set(X_test_encoded.columns)
     
@@ -194,7 +189,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     missing_in_test = train_cols - test_cols
     missing_in_train = test_cols - train_cols
     
-    # Add missing columns with zeros
+    # add missing columns with zeros
     for col in missing_in_test:
         X_test_encoded[col] = 0
     
@@ -207,14 +202,14 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     print(f"✓ Columns aligned")
     print(f"Final shapes - Train: {X_train_encoded.shape}, Test: {X_test_encoded.shape}")
     
-    # Step 6: Label Encoding for target
+    # step 6: Label Encoding for target
     print(f"\n[7/9] Encoding target labels...")
     
     label_encoder = LabelEncoder()
     y_train_encoded = label_encoder.fit_transform(y_train)
     y_test_encoded = label_encoder.transform(y_test)
     
-    # Save label encoder
+    # save label encoder
     os.makedirs(output_dir, exist_ok=True)
     joblib.dump(label_encoder, os.path.join(output_dir, 'label_encoder.pkl'))
     print(f"✓ Label Encoder saved to {output_dir}/label_encoder.pkl")
@@ -222,20 +217,20 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     print(f"Training distribution: {np.bincount(y_train_encoded)}")
     print(f"Test distribution: {np.bincount(y_test_encoded)}")
     
-    # Step 7: Scaling
+    # step 7: Scaling
     print(f"\n[8/9] Scaling features to [0, 1]...")
     
     scaler = MinMaxScaler()
     X_train_scaled = scaler.fit_transform(X_train_encoded)
     X_test_scaled = scaler.transform(X_test_encoded)
     
-    # Save scaler
+    # save scaler
     joblib.dump(scaler, os.path.join(output_dir, 'scaler.pkl'))
     print(f"✓ MinMaxScaler saved to {output_dir}/scaler.pkl")
     print(f"Training feature range: [{X_train_scaled.min():.4f}, {X_train_scaled.max():.4f}]")
     print(f"Test feature range: [{X_test_scaled.min():.4f}, {X_test_scaled.max():.4f}]")
     
-    # Step 8: Create validation set from training data (15% of training)
+    # step 8: validation set from training data (15% of training)
     print(f"\n[9/9] Creating validation set from training data...")
     
     from sklearn.model_selection import train_test_split
@@ -248,23 +243,21 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
     print(f"✓ Validation set: {X_val.shape[0]:,} samples")
     print(f"✓ Test set: {X_test_scaled.shape[0]:,} samples")
 
-    # Step 9: Balanced Sampling Pipeline (Undersampling + SMOTE)
+    # step 9: Balanced Sampling Pipeline (Undersampling + SMOTE)
     print(f"\n[10/10] Applying balanced sampling pipeline to training set...")
     print(f"Before balancing - Train set distribution:")
 
-    # Calculate current distribution
+    # current distribution
     unique_classes, class_counts = np.unique(y_train_final, return_counts=True)
     for cls, count in zip(unique_classes, class_counts):
         print(f"  {cls}: {count:,}")
 
-    # Fix 1: Windows joblib/loky workaround
     os.environ['LOKY_MAX_CPU_COUNT'] = '4'
 
     try:
-        # Set target sample count
         target_samples = 15000
 
-        # Build undersampling strategy (cap large classes)
+        # Build undersampling strategy
         under_strategy = {}
         smote_strategy = {}
 
@@ -277,28 +270,28 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
                 under_strategy[cls] = target_samples
                 print(f"  {cls}: Undersample {count:,} → {target_samples:,}")
             elif count >= 6 and count < target_samples:
-                # Oversample small classes (but only if >= 6 samples for SMOTE)
+                # Oversample small classes (only if >= 6 samples for SMOTE)
                 smote_strategy[cls] = target_samples
                 print(f"  {cls}: Oversample {count:,} → {target_samples:,}")
             elif count < 6:
-                # Too few samples for SMOTE, leave as-is
+                # Too few samples for SMOTE
                 print(f"  {cls}: Leave unchanged ({count} samples - too few for SMOTE)")
             else:
                 # Exactly at target
                 print(f"  {cls}: Already at target ({count:,} samples)")
 
-        # Create balanced sampling pipeline
+        # create balanced sampling pipeline
         if under_strategy or smote_strategy:
             steps = []
 
-            # Add undersampling if needed
+            # undersample if needed
             if under_strategy:
                 steps.append(('undersample', RandomUnderSampler(
                     sampling_strategy=under_strategy,
                     random_state=random_state
                 )))
 
-            # Add oversampling if needed
+            # oversampling if needed
             if smote_strategy:
                 steps.append(('oversample', SMOTE(
                     sampling_strategy=smote_strategy,
@@ -306,7 +299,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
                     random_state=random_state
                 )))
 
-            # Apply pipeline
+            # apply
             if steps:
                 sampling_pipeline = ImbPipeline(steps)
                 X_train_balanced, y_train_balanced = sampling_pipeline.fit_resample(X_train_final, y_train_final)
@@ -333,7 +326,7 @@ def process_nsl_kdd(train_path, test_path, output_dir='models/nslkdd', random_st
         X_train_balanced = X_train_final
         y_train_balanced = y_train_final
     
-    # Prepare return dictionary
+    # return dictionary
     processed_data = {
         'X_train': X_train_balanced,
         'y_train': y_train_balanced,

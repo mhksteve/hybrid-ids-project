@@ -1,6 +1,6 @@
 """
 Machine Learning Models Module
-Contains Random Forest, XGBoost, and SVM implementations
+Random Forest, XGBoost, and SVM implementations
 """
 
 from sklearn.ensemble import RandomForestClassifier
@@ -105,8 +105,6 @@ class MLModels:
     
     def train_model(self, model_name, X_train, y_train, X_val=None, y_val=None, use_subset_for_svm=True, svm_subset_size=10000):
         """
-        Train a specific model8
-        
         Args:
             model_name: Name of the model ('RandomForest', 'XGBoost', 'SVM')
             X_train: Training features
@@ -129,7 +127,7 @@ class MLModels:
         print(f"Training {model_name}")
         print(f"{'='*60}")
         
-        # Use subset for SVM if enabled
+        # Use subset for SVM
         if model_name == 'SVM' and use_subset_for_svm and X_train.shape[0] > svm_subset_size:
             print(f"⚠ Using subset of {svm_subset_size:,} samples for SVM training (full dataset: {X_train.shape[0]:,})")
             indices = np.random.choice(X_train.shape[0], svm_subset_size, replace=False)
@@ -139,7 +137,7 @@ class MLModels:
             X_train_subset = X_train
             y_train_subset = y_train
         
-        # Train the model
+        # Model training
         start_time = time.time()
         print(f"Training on {X_train_subset.shape[0]:,} samples...")
         
@@ -155,7 +153,7 @@ class MLModels:
             train_acc = accuracy_score(y_train_subset, train_pred)
             print(f"Training Accuracy: {train_acc*100:.2f}%")
             
-            # Evaluate on validation set if provided
+            # Evaluate on validation set
             if X_val is not None and y_val is not None:
                 val_pred = model.predict(X_val)
                 val_acc = accuracy_score(y_val, val_pred)

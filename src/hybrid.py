@@ -1,5 +1,5 @@
 """
-Hybrid Model Module
+Hybrid Model
 Combines Deep Learning feature extraction (1D-CNN) with Machine Learning classification (Random Forest)
 Scenario C: The Core Hybrid Solution
 """
@@ -15,10 +15,6 @@ import time
 class HybridModel:
     """
     Hybrid AI Model: CNN Feature Extractor + Random Forest Classifier
-    
-    This model leverages the strengths of both paradigms:
-    - Deep Learning: Automatic feature extraction from raw data
-    - Machine Learning: Fast, interpretable classification
     """
     
     def __init__(self):
@@ -29,8 +25,6 @@ class HybridModel:
     
     def build_from_pretrained_cnn(self, cnn_model, feature_layer_name='dense_2', n_estimators=100):
         """
-        Build hybrid model from a pre-trained CNN
-        
         Args:
             cnn_model: Trained Keras 1D-CNN model
             feature_layer_name: Name of the layer to extract features from
@@ -43,15 +37,15 @@ class HybridModel:
         print("BUILDING HYBRID MODEL")
         print("="*60)
         
-        # Step 1: Create feature extractor from CNN
+        # step 1: Create feature extractor from CNN
         print(f"\n[1/2] Creating CNN Feature Extractor...")
         print(f"Extracting features from layer: '{feature_layer_name}'")
         
         try:
-            # Get the output of the specified layer
+            # output of the specified layer
             feature_layer = cnn_model.get_layer(feature_layer_name)
             
-            # Create a new model that outputs the features
+            # create a new model that outputs the features
             self.cnn_extractor = keras.Model(
                 inputs=cnn_model.input,
                 outputs=feature_layer.output,
@@ -67,7 +61,7 @@ class HybridModel:
             print(f"Available layers: {[layer.name for layer in cnn_model.layers]}")
             return None
         
-        # Step 2: Initialize Random Forest classifier
+        # step 2: Initialize Random Forest classifier
         print(f"\n[2/2] Initializing Random Forest Classifier...")
         self.rf_classifier = RandomForestClassifier(
             n_estimators=n_estimators,
@@ -86,8 +80,6 @@ class HybridModel:
     
     def extract_deep_features(self, X):
         """
-        Extract deep features using the CNN extractor
-        
         Args:
             X: Input data (2D or 3D array)
         
@@ -105,12 +97,6 @@ class HybridModel:
     
     def train_hybrid(self, X_train, y_train, X_val=None, y_val=None):
         """
-        Train the hybrid model
-        
-        Process:
-        1. Extract deep features from training data using CNN
-        2. Train Random Forest on the extracted features
-        
         Args:
             X_train: Training features (raw)
             y_train: Training labels
@@ -124,7 +110,7 @@ class HybridModel:
         print("TRAINING HYBRID MODEL")
         print("="*60)
         
-        # Step 1: Extract deep features from training data
+        # step 1: Extract deep features
         print(f"\n[1/2] Extracting deep features from training data...")
         print(f"Input shape: {X_train.shape}")
         
@@ -135,7 +121,7 @@ class HybridModel:
         print(f"✓ Deep features extracted in {feature_extraction_time:.2f} seconds")
         print(f"Deep feature shape: {X_train_deep.shape}")
         
-        # Step 2: Train Random Forest on deep features
+        # step 2: Train Random Forest on deep features
         print(f"\n[2/2] Training Random Forest on deep features...")
         print(f"Training on {X_train_deep.shape[0]:,} samples with {X_train_deep.shape[1]} deep features")
         
@@ -175,8 +161,6 @@ class HybridModel:
     
     def predict(self, X):
         """
-        Make predictions using the hybrid model
-        
         Args:
             X: Input features (raw)
         
@@ -211,8 +195,6 @@ class HybridModel:
     
     def evaluate(self, X_test, y_test, label_encoder=None):
         """
-        Comprehensive evaluation of the hybrid model
-        
         Args:
             X_test: Test features
             y_test: Test labels
@@ -239,7 +221,7 @@ class HybridModel:
         
         total_inference_time = feature_extraction_time + classification_time
         
-        # Calculate metrics
+        # metrics
         accuracy = accuracy_score(y_test, y_pred)
         
         print(f"\nTest Accuracy: {accuracy*100:.2f}%")
@@ -279,8 +261,6 @@ class HybridModel:
     
     def save_models(self, cnn_path='models/cnn_feature_extractor.h5', rf_path='models/hybrid_rf.pkl'):
         """
-        Save both components of the hybrid model
-        
         Args:
             cnn_path: Path to save CNN feature extractor
             rf_path: Path to save Random Forest classifier
@@ -305,8 +285,6 @@ class HybridModel:
     
     def load_models(self, cnn_path='models/cnn_feature_extractor.h5', rf_path='models/hybrid_rf.pkl'):
         """
-        Load both components of the hybrid model
-        
         Args:
             cnn_path: Path to CNN feature extractor
             rf_path: Path to Random Forest classifier

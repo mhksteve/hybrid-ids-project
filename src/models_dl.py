@@ -1,6 +1,5 @@
 """
 Deep Learning Models Module
-Contains 1D-CNN and LSTM implementations using TensorFlow/Keras
 """
 
 import numpy as np
@@ -24,8 +23,6 @@ class DLModels:
     
     def build_1d_cnn(self, input_shape, n_classes, filters=[64, 128, 256], kernel_size=3, dropout_rate=0.3):
         """
-        Build 1D-CNN architecture for feature extraction and classification
-        
         Args:
             input_shape: Shape of input (n_features, 1)
             n_classes: Number of output classes
@@ -80,8 +77,6 @@ class DLModels:
     
     def build_lstm(self, input_shape, n_classes, lstm_units=[128, 64], dropout_rate=0.3):
         """
-        Build LSTM architecture for sequential pattern recognition
-        
         Args:
             input_shape: Shape of input (n_features, 1)
             n_classes: Number of output classes
@@ -162,8 +157,7 @@ class DLModels:
         print(f"\n{'='*60}")
         print(f"Training {model_name}")
         print(f"{'='*60}")
-        
-        # Ensure data is 3D (samples, timesteps, features)
+
         if len(X_train.shape) == 2:
             X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
             X_val = X_val.reshape(X_val.shape[0], X_val.shape[1], 1)
@@ -232,8 +226,6 @@ class DLModels:
     
     def evaluate_model(self, model_name, X_test, y_test, label_encoder=None):
         """
-        Comprehensive evaluation of a deep learning model
-        
         Args:
             model_name: Name of the model
             X_test: Test features
@@ -252,8 +244,7 @@ class DLModels:
         print(f"\n{'='*60}")
         print(f"Evaluating {model_name} on Test Set")
         print(f"{'='*60}")
-        
-        # Ensure data is 3D
+
         if len(X_test.shape) == 2:
             X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
         
@@ -298,8 +289,6 @@ class DLModels:
     
     def save_model(self, model_name, filepath):
         """
-        Save a trained model to disk
-        
         Args:
             model_name: Name of the model
             filepath: Path to save the model (.h5 format)

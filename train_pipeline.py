@@ -5,9 +5,8 @@ three scenarios
 - Scenario B: Standalone Deep Learning (1D-CNN, LSTM)
 - Scenario C: Hybrid Model (CNN Feature Extractor + RF Classifier)
 
-Supports multiple datasets via command-line arguments:
-- cicids: python train_pipeline.py --dataset cicids --data-path data/cicids/
-- nsl-kdd: python train_pipeline.py --dataset nslkdd --train-path data/nslkdd/KDDTrain+.txt --test-path data/nslkdd/KDDTest+.txt
+- cicids: python train_pipeline.py --dataset cicids
+- nsl-kdd: python train_pipeline.py --dataset nslkdd
 """
 
 
@@ -22,7 +21,7 @@ from src.hybrid import HybridModel
 def run_scenario_a(data, output_dir='models'):
     """
     Scenario A: Standalone Machine Learning
-    Train and evaluate RF, XGBoost, and SVM models
+    RF, XGBoost, and SVM models
     """
     print("\n\n")
     print("╔" + "="*78 + "╗")
@@ -31,12 +30,12 @@ def run_scenario_a(data, output_dir='models'):
     
     ml_models = MLModels()
     
-    # Build models
+    # Build
     ml_models.build_random_forest(n_estimators=100)
     ml_models.build_xgboost(n_estimators=100)
     ml_models.build_svm(kernel='rbf')
     
-    # Train models
+    # Train
     X_train = data['X_train']
     y_train = data['y_train']
     X_val = data['X_val']
@@ -59,7 +58,7 @@ def run_scenario_a(data, output_dir='models'):
     svm_results = ml_models.evaluate_model('SVM', X_test, y_test, data['label_encoder'])
     ml_models.save_model('SVM', os.path.join(output_dir, 'svm.pkl'))
     
-    # Output summary
+    # Output
     print("\n" + "="*60)
     print("SCENARIO A SUMMARY")
     print("="*60)
@@ -78,7 +77,7 @@ def run_scenario_a(data, output_dir='models'):
 def run_scenario_b(data, output_dir='models'):
     """
     Scenario B: Standalone Deep Learning
-    Train and evaluate 1D-CNN and LSTM models
+    1D-CNN and LSTM models
     """
     print("\n\n")
     print("╔" + "="*78 + "╗")
@@ -86,8 +85,7 @@ def run_scenario_b(data, output_dir='models'):
     print("╚" + "="*78 + "╝")
     
     dl_models = DLModels()
-    
-    # Prepare data
+
     X_train = data['X_train']
     y_train = data['y_train']
     X_val = data['X_val']
@@ -127,7 +125,7 @@ def run_scenario_b(data, output_dir='models'):
 def run_scenario_c(data, dl_models, output_dir='models'):
     """
     Scenario C: Hybrid Model
-    Combine CNN feature extraction with RF classification
+    CNN feature extraction with RF classification
     """
     print("\n\n")
     print("╔" + "="*78 + "╗")
@@ -153,7 +151,7 @@ def run_scenario_c(data, dl_models, output_dir='models'):
     # Evaluate
     hybrid_results = hybrid.evaluate(X_test, y_test, data['label_encoder'])
     
-    # Save hybrid model with dataset-specific paths
+    # Save hybrid model with paths
     hybrid.save_models(
         os.path.join(output_dir, 'cnn_feature_extractor.h5'),
         os.path.join(output_dir, 'hybrid_rf.pkl')
@@ -171,21 +169,20 @@ def run_scenario_c(data, dl_models, output_dir='models'):
 
 def main():
     """
-    Main execution function
     Run all three scenarios sequentially with dataset-specific preprocessing
     """
     
-    # Parse command-line arguments
+    # command-line arguments
     parser = argparse.ArgumentParser(
         description='Train Hybrid IDS on CICIDS2017 or NSL-KDD dataset',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Train on CICIDS2017
-  python train_pipeline.py --dataset cicids --data-path data/cicids2017/
+  python train_pipeline.py --dataset cicids 
   
   # Train on NSL-KDD
-  python train_pipeline.py --dataset nslkdd --train-path data/nslkdd/KDDTrain+.txt --test-path data/nslkdd/KDDTest+.txt
+  python train_pipeline.py --dataset nslkdd
         """
     )
     
@@ -194,7 +191,7 @@ Examples:
         type=str,
         required=True,
         choices=['cicids', 'nslkdd'],
-        help='Dataset to use: cicids (CICIDS2017) or nslkdd (NSL-KDD)'
+        help='Dataset to use: cicids or nslkdd'
     )
     
     # CICIDS2017 arguments
@@ -231,7 +228,7 @@ Examples:
     print(f"\nDataset: {args.dataset.upper()}")
     print("="*80)
     
-    # Phase 1: Data Preprocessing (dataset-specific)
+    # phase 1: Data Preprocessing
     if args.dataset == 'cicids':
         # Import CICIDS2017 preprocessing
         from src.preprocess_cicids import process_cicids
@@ -275,8 +272,7 @@ Examples:
         if not os.path.exists(args.test_path):
             print(f"\n✗ ERROR: Test file not found: {args.test_path}")
             return
-        
-        # Process NSL-KDD data
+
         output_dir = 'models/nslkdd'
         data = process_nsl_kdd(args.train_path, args.test_path, output_dir=output_dir)
     
@@ -287,8 +283,7 @@ Examples:
     # Update model paths to use dataset-specific directories
     print(f"\n✓ Models will be saved to: {output_dir}/")
     
-    # Phase 2: Model Training
-    
+    # phase 2: Model Training
     # Scenario A: ML Models
     ml_models, scenario_a_results = run_scenario_a(data, output_dir)
     
@@ -298,7 +293,7 @@ Examples:
     # Scenario C: Hybrid Model
     hybrid_model, scenario_c_results = run_scenario_c(data, dl_models, output_dir)
     
-    # Final Summary
+    # Summary
     print("\n\n")
     print("╔" + "="*78 + "╗")
     print("║" + " "*28 + "FINAL SUMMARY" + " "*37 + "║")

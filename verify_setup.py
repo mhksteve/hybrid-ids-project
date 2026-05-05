@@ -34,7 +34,7 @@ def verify_setup():
     python_version = sys.version_info
     print(f"Python version: {python_version.major}.{python_version.minor}.{python_version.micro}")
 
-    #Check if exactly Python 3.10 is being used
+    #Check if Python 3.10 is being used
     if python_version.major == 3 and python_version.minor == 10:
         print("✓ Python 3.10 detected")
     else:
