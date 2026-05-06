@@ -2,9 +2,16 @@
 .venv/
 venv/
 
-#large files
-models/
-data/
+#models folder
+models/*
+!models/.gitkeep
+
+#data folder
+data/cicids2017/*
+data/nslkdd/*
+!data/cicids2017/.gitkeep
+!data/nslkdd/.gitkeep
+
 
 # Python cache
 __pycache__/
